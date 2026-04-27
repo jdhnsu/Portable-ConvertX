@@ -1,0 +1,144 @@
+{
+  "version": "1.0.0",
+  "description": "Portable ConvertX first-pass conversion rules. Paths are relative to TestTools.",
+  "conversions": [
+    {
+      "converter": "ImageMagick",
+      "from": ["jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff", "tif", "ico"],
+      "to": ["jpg", "png", "webp", "gif", "bmp", "tiff", "ico", "pdf"],
+      "executable": "ImageMagick/magick.exe",
+      "argumentTemplate": "\"{input}\" \"{output}\"",
+      "category": "image",
+      "priority": 20,
+      "description": "通用图片转换",
+      "outputArgumentTemplates": {
+        "ico": "-define icon:auto-resize=256,128,64,48,32,16 -background none"
+      }
+    },
+    {
+      "converter": "resvg",
+      "from": ["svg"],
+      "to": ["png"],
+      "executable": "resvg/resvg.exe",
+      "argumentTemplate": "\"{input}\" \"{output}\"",
+      "category": "image",
+      "priority": 5,
+      "description": "SVG 渲染为 PNG"
+    },
+    {
+      "converter": "inkscape",
+      "from": ["svg", "pdf", "eps"],
+      "to": ["png", "pdf", "svg", "eps"],
+      "executable": "inkscape/bin/inkscape.exe",
+      "argumentTemplate": "\"{input}\" --export-type={format} --export-filename=\"{output}\"",
+      "category": "image",
+      "priority": 15,
+      "description": "矢量图导出"
+    },
+    {
+      "converter": "libheif",
+      "from": ["heic", "heif", "avif"],
+      "to": ["jpg", "png"],
+      "executable": "libheif/portable/heif-convert.exe",
+      "argumentTemplate": "\"{input}\" \"{output}\"",
+      "category": "image",
+      "priority": 5,
+      "description": "HEIF/AVIF 解码"
+    },
+    {
+      "converter": "libheif",
+      "from": ["jpg", "jpeg", "png"],
+      "to": ["heic", "heif", "avif"],
+      "executable": "libheif/portable/heif-enc.exe",
+      "argumentTemplate": "\"{input}\" -o \"{output}\"",
+      "category": "image",
+      "priority": 10,
+      "description": "编码为 HEIF/AVIF"
+    },
+    {
+      "converter": "jxl",
+      "from": ["jpg", "jpeg", "png", "gif", "ppm", "pfm", "pgx"],
+      "to": ["jxl"],
+      "executable": "jxl/bin/cjxl.exe",
+      "argumentTemplate": "\"{input}\" \"{output}\"",
+      "category": "image",
+      "priority": 5,
+      "description": "编码为 JPEG XL"
+    },
+    {
+      "converter": "jxl",
+      "from": ["jxl"],
+      "to": ["png", "jpg", "jpeg", "ppm", "pfm", "pgx"],
+      "executable": "jxl/bin/djxl.exe",
+      "argumentTemplate": "\"{input}\" \"{output}\"",
+      "category": "image",
+      "priority": 5,
+      "description": "解码 JPEG XL"
+    },
+    {
+      "converter": "ffmpeg",
+      "from": ["mp4", "mkv", "mov", "avi", "webm", "flv", "wmv", "m4v", "mp3", "wav", "flac", "aac", "ogg", "m4a"],
+      "to": ["mp4", "mkv", "mov", "avi", "webm", "mp3", "wav", "flac", "aac", "ogg", "gif", "webp", "ico", "av1.mp4", "av1.mkv", "h264.mp4", "h264.mkv", "h265.mp4", "h265.mkv"],
+      "executable": "ffmpeg/bin/ffmpeg.exe",
+      "argumentTemplate": "-y -i \"{input}\" \"{output}\"",
+      "category": "audio-video",
+      "priority": 5,
+      "description": "音视频转码",
+      "outputArgumentTemplates": {
+        "ico": "-filter:v scale=min(256,iw):min(256,ih):force_original_aspect_ratio=decrease",
+        "av1.mp4": "-c:v libaom-av1",
+        "av1.mkv": "-c:v libaom-av1",
+        "h264.mp4": "-c:v libx264",
+        "h264.mkv": "-c:v libx264",
+        "h265.mp4": "-c:v libx265",
+        "h265.mkv": "-c:v libx265"
+      }
+    },
+    {
+      "converter": "Calibre",
+      "from": ["azw4", "chm", "cbr", "cbz", "cbt", "cba", "cb7", "djvu", "docx", "epub", "fb2", "htlz", "html", "lit", "lrf", "mobi", "odt", "pdb", "pdf", "pml", "rb", "rtf", "recipe", "snb", "tcr", "txt"],
+      "to": ["azw3", "docx", "epub", "fb2", "html", "htmlz", "kepub.epub", "lit", "lrf", "mobi", "oeb", "pdb", "pdf", "pml", "rb", "rtf", "snb", "tcr", "txt", "txtz"],
+      "executable": "Calibre/Calibre/ebook-convert.exe",
+      "argumentTemplate": "\"{input}\" \"{output}\"",
+      "category": "document",
+      "priority": 5,
+      "description": "电子书转换"
+    },
+    {
+      "converter": "pandoc",
+      "from": ["textile", "tikiwiki", "tsv", "twiki", "typst", "vimwiki", "biblatex", "bibtex", "bits", "commonmark", "commonmark_x", "creole", "csljson", "csv", "djot", "docbook", "docx", "dokuwiki", "endnotexml", "epub", "fb2", "gfm", "haddock", "html", "ipynb", "jats", "jira", "json", "latex", "man", "markdown", "md", "markdown_mmd", "markdown_phpextra", "markdown_strict", "mediawiki", "muse", "opml", "org", "ris", "rst", "rtf", "t2t", "txt"],
+      "to": ["tei", "texinfo", "textile", "typst", "xwiki", "zimwiki", "asciidoc", "asciidoc_legacy", "asciidoctor", "beamer", "biblatex", "bibtex", "chunkedhtml", "commonmark", "commonmark_x", "context", "csljson", "djot", "docbook", "docbook4", "docbook5", "docx", "dokuwiki", "dzslides", "epub", "epub2", "epub3", "fb2", "gfm", "haddock", "html", "html4", "html5", "icml", "ipynb", "jats", "jira", "json", "latex", "man", "markdown", "md", "markdown_mmd", "markdown_phpextra", "markdown_strict", "markua", "mediawiki", "ms", "muse", "odt", "opendocument", "opml", "org", "pdf", "plain", "pptx", "revealjs", "rst", "rtf", "s5", "slideous", "slidy"],
+      "executable": "pandoc/pandoc.exe",
+      "argumentTemplate": "\"{input}\" -f {inputFormat} -t {format} -o \"{output}\"",
+      "category": "document",
+      "priority": 10,
+      "description": "通用文档转换",
+      "outputArgumentTemplates": {
+        "pdf": "--pdf-engine=xelatex",
+        "latex": "--pdf-engine=xelatex"
+      }
+    },
+    {
+      "converter": "LibreOffice",
+      "from": ["602", "abw", "csv", "cwk", "doc", "docm", "docx", "dot", "dotx", "dotm", "epub", "fb2", "fodt", "htm", "html", "hwp", "mcw", "mw", "mwd", "lwp", "lrf", "odt", "ott", "pages", "pdf", "psw", "rtf", "sdw", "stw", "sxw", "tab", "tsv", "txt", "wn", "wpd", "wps", "wpt", "wri", "xhtml", "xml", "zabw"],
+      "to": ["csv", "doc", "docm", "docx", "dot", "dotx", "dotm", "epub", "fodt", "htm", "html", "odt", "ott", "pdf", "rtf", "tab", "tsv", "txt", "wps", "wpt", "xhtml", "xml"],
+      "executable": "LibreOfficePortable/App/libreoffice/program/soffice.exe",
+      "argumentTemplate": "--headless --convert-to {format} --outdir \"{outputDir}\" \"{input}\"",
+      "category": "document",
+      "priority": 8,
+      "description": "Office 文档导出"
+    },
+    {
+      "converter": "dasel",
+      "from": ["json", "yaml", "yml", "toml", "xml", "csv"],
+      "to": ["json", "yaml", "toml", "csv"],
+      "executable": "dasel/dasel_windows_amd64.exe",
+      "argumentTemplate": "-i {inputFormat} -o {format} --root",
+      "category": "data",
+      "priority": 5,
+      "description": "结构化数据转换",
+      "pipeInputToStdin": true,
+      "writeStdoutToOutput": true
+    }
+  ]
+}

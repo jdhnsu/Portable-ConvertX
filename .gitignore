@@ -1,0 +1,9 @@
+Plan.md
+dist/*
+.vs/*
+*.user
+ConvertXPortable/bin/*
+References/*
+TestTools/*
+ConvertXPortable/obj/*
+test/*

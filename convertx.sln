@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertXPortable", "ConvertXPortable\ConvertXPortable.csproj", "{50084D2B-27D7-95B1-0135-D2E90EB3A9DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50084D2B-27D7-95B1-0135-D2E90EB3A9DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50084D2B-27D7-95B1-0135-D2E90EB3A9DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50084D2B-27D7-95B1-0135-D2E90EB3A9DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50084D2B-27D7-95B1-0135-D2E90EB3A9DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB400725-65AF-48A2-9720-09FDBE740E24}
+	EndGlobalSection
+EndGlobal
