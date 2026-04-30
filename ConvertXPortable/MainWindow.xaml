@@ -7,13 +7,13 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         FontFamily="Inter, Segoe UI, Microsoft YaHei UI"
-        Background="#101419">
+        Background="#B31C2026">
   <shell:WindowChrome.WindowChrome>
     <shell:WindowChrome CaptionHeight="56"
                         ResizeBorderThickness="8"
                         GlassFrameThickness="0"
                         UseAeroCaptionButtons="False"
-                        CornerRadius="0" />
+                        CornerRadius="12" />
   </shell:WindowChrome.WindowChrome>
   <Window.Resources>
     <SolidColorBrush x:Key="TextBrush" Color="#E0E2EA" />
@@ -524,9 +524,9 @@
             Background="#B31C2026">
       <Border.Style>
         <Style TargetType="Border">
-          <Setter Property="Margin" Value="8" />
+          <Setter Property="Margin" Value="0" />
           <Setter Property="CornerRadius" Value="12" />
-          <Setter Property="Effect" Value="{StaticResource ShellShadow}" />
+          <Setter Property="Effect" Value="{x:Null}" />
           <Style.Triggers>
             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" Value="Maximized">
               <Setter Property="Margin" Value="0" />
