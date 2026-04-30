@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e0e2ea",
+                        "on-surface": "#e0e2ea",
+                        "primary-container": "#0078d4",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0b0e14",
+                        "on-background": "#e0e2ea",
+                        "on-secondary": "#303030",
+                        "background": "#101419",
+                        "inverse-primary": "#0060ab",
+                        "tertiary-fixed-dim": "#ffb689",
+                        "on-error": "#690005",
+                        "on-primary-container": "#ffffff",
+                        "on-primary-fixed-variant": "#004883",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#bc5b00",
+                        "on-tertiary-fixed-variant": "#743500",
+                        "surface-container": "#1c2026",
+                        "on-primary": "#00315c",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "primary-fixed": "#d3e3ff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#a3c9ff",
+                        "primary": "#a3c9ff",
+                        "surface-variant": "#31353b",
+                        "surface-container-low": "#181c22",
+                        "on-tertiary": "#512300",
+                        "on-secondary-container": "#b7b5b4",
+                        "secondary-fixed": "#e5e2e1",
+                        "tertiary-fixed": "#ffdbc8",
+                        "secondary": "#c8c6c5",
+                        "surface": "#101419",
+                        "on-tertiary-fixed": "#311300",
+                        "on-surface-variant": "#c0c7d4",
+                        "surface-dim": "#101419",
+                        "on-primary-fixed": "#001c39",
+                        "surface-tint": "#a3c9ff",
+                        "tertiary": "#ffb689",
+                        "on-tertiary-container": "#ffffff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "surface-bright": "#363940",
+                        "secondary-container": "#474746",
+                        "surface-container-high": "#272a30",
+                        "outline-variant": "#404752",
+                        "inverse-on-surface": "#2d3137",
+                        "outline": "#8a919e",
+                        "surface-container-highest": "#31353b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "unit": "4px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "gutter": "20px",
+                        "container-max": "1200px",
+                        "xl": "32px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "mono": ["monospace"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.mica-background {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDlDlOV9DV2QFCBE1rSJ-mq9Y1LFrs6oa7NgaG2wieobFBtp1VkDoTRR_-6bkro_Xk40sb_oBrH7yO6Z1g4c19k64W1T5-7R2Go_sTcZwmvh0q9Bod3_ans5M7sYbnIaVhl_yfXD7r9CJW-1vkDKwRKk0vx26wdc_ZszX4sAsh_g_IpRQf0UR4t1gw5YfbCsp6-D7Cj98oqgJnvvKJHR-s-jZdwC7lgpQdm4vcJBb5t2DFr-EZKGgQJRyn84bQaNanX8_zZm9Y7Bok);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed
+    }
+.acrylic-surface {
+    backdrop-filter: blur(40px) saturate(150%);
+    background-color: rgba(16, 20, 25, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08)
+    }
+.glass-card {
+    backdrop-filter: blur(25px);
+    background-color: rgba(28, 32, 38, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4)
+    }
+.glass-card-hover:hover {
+    border-color: rgba(163, 201, 255, 0.4);
+    box-shadow: 0 0 20px rgba(0, 120, 212, 0.15)
+    }</style>
+</head>
+<body class="bg-background text-on-surface font-body-md mica-background min-h-screen flex flex-col items-center">
+<!-- Scenic Background Overlay for Depth -->
+<div class="fixed inset-0 bg-black/40 pointer-events-none"></div>
+<div class="relative z-10 w-full max-w-[1200px] flex flex-col min-h-screen px-gutter">
+<!-- Simplified Header -->
+<header class="flex items-center justify-between py-xl px-xl mt-md acrylic-surface rounded-xl">
+<div class="flex items-center gap-sm">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"></path>
+</svg>
+</div>
+<h1 class="text-headline-md text-white tracking-tight">Converter</h1>
+</div>
+<nav class="flex items-center gap-xl">
+<a class="text-primary font-semibold flex items-center gap-xs" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">home</span>
+                    Home
+                </a>
+<a class="text-on-surface-variant hover:text-white transition-colors flex items-center gap-xs" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                    Settings
+                </a>
+</nav>
+</header>
+<!-- Main Workspace -->
+<main class="flex-1 flex flex-col items-center justify-center py-xl">
+<div class="w-full max-w-[800px] flex flex-col gap-lg">
+<!-- Hero Text -->
+<div class="text-center mb-md">
+<h2 class="text-display text-white mb-sm">Precision File Conversion</h2>
+<p class="text-on-surface-variant text-body-lg max-w-[600px] mx-auto">Fast, simple, and secure. Convert your documents, images, and media instantly using our high-performance engine.</p>
+</div>
+<!-- Core Utility Card -->
+<div class="glass-card rounded-xl p-xl flex flex-col gap-xl">
+<!-- Drop Zone -->
+<div class="group relative flex flex-col items-center justify-center gap-md border-2 border-dashed border-outline-variant rounded-xl py-20 px-xl bg-surface-container-low/30 hover:border-primary/50 hover:bg-primary-container/5 transition-all cursor-pointer">
+<div class="size-16 rounded-full bg-surface-container-high flex items-center justify-center text-primary-fixed group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]">upload_file</span>
+</div>
+<div class="text-center">
+<p class="text-headline-md text-white">Drop files here</p>
+<p class="text-on-surface-variant text-body-md mt-xs">or click to browse from your device</p>
+</div>
+</div>
+<!-- Options Bar -->
+<div class="flex flex-col md:flex-row items-end gap-lg pt-md">
+<div class="flex-1 w-full space-y-sm">
+<label class="text-label-sm text-on-surface-variant uppercase tracking-widest pl-xs">Convert to Format</label>
+<div class="relative w-full">
+<select class="w-full h-12 bg-surface-container-high border border-outline-variant rounded-lg px-md text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+<option>PDF (Document)</option>
+<option>JPG (Image)</option>
+<option>PNG (Image)</option>
+<option>DOCX (Word)</option>
+<option>MP4 (Video)</option>
+<option>MP3 (Audio)</option>
+</select>
+<div class="absolute right-md top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<button class="w-full md:w-auto h-12 px-xl bg-primary-container text-white font-bold rounded-lg flex items-center justify-center gap-sm hover:brightness-110 shadow-[0_0_15px_rgba(0,120,212,0.4)] transition-all">
+<span>Start Conversion</span>
+<span class="material-symbols-outlined">bolt</span>
+</button>
+</div>
+</div>
+<!-- Secondary Info / Meta -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="glass-card rounded-xl p-md flex items-center gap-md">
+<div class="size-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">encrypted</span>
+</div>
+<div>
+<p class="text-white font-semibold text-body-md">End-to-End Encryption</p>
+<p class="text-on-surface-variant text-label-sm">Secure data handling</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-md flex items-center gap-md">
+<div class="size-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">speed</span>
+</div>
+<div>
+<p class="text-white font-semibold text-body-md">High-Speed Engine</p>
+<p class="text-on-surface-variant text-label-sm">Processed in seconds</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-md flex items-center gap-md">
+<div class="size-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">cloud_done</span>
+</div>
+<div>
+<p class="text-white font-semibold text-body-md">Cloud Architecture</p>
+<p class="text-on-surface-variant text-label-sm">Scalable processing</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Minimal Footer -->
+<footer class="py-lg px-xl flex justify-between border-t border-outline-variant/20 text-label-sm text-on-surface-variant/60">
+<p>© 2024 Converter Precision Utility</p>
+<div class="flex gap-lg">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-white transition-colors" href="#">Documentation</a>
+</div>
+</footer>
+</div>
+<!-- Background Image with Specific Prompt -->
+<img class="hidden" data-alt="A mesmerizing and atmospheric digital abstract landscape featuring flowing waves of silk-like textures in deep navy blue, teal, and soft charcoal. The scene is illuminated by a subtle, ethereal light source that creates a professional, high-performance aesthetic typical of a modern software workspace. The mood is calm, sophisticated, and focused, echoing the precision of a high-end digital tool. Fine gradients and soft-focus depths create a sense of infinite space and technological craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD44sZyQSswoT7Eh3ey-1ts_a8Kq76h_5WeWp09G4-yeyq75OUgnwzqz54TkdQzpAN1ARxoQos1_NvrEBkbJyGRXNepRg9UP9ZHzjrzpuqGBCRZ8lCycCqpji7NtszfnGUSrqC7b6-hRHL_Q3DBuaWwaH3SuU05EzHIkPlKWOSS9UQXQpxs4M9Sr7i23Yemo7X78ZOYp80-oEdmoAG6bbrlF4GygMj07Ym9DvW0dvzMKcD8PiqsGhsPRwOjvxb9MMGoWLy3DaZ62ok"/>
+</body></html>

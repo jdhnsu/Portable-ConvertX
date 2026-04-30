@@ -12,6 +12,8 @@ namespace ConvertXPortable;
 
 public partial class MainWindow : Window
 {
+    private const string NvidiaAccelerationArguments = "-hwaccel cuda -c:v h264_nvenc";
+
     private readonly AppViewModel _viewModel = new();
     private readonly PathResolver _pathResolver = new();
     private readonly ConfigurationService _configurationService;
@@ -20,6 +22,7 @@ public partial class MainWindow : Window
     private readonly ConversionExecutor _executor;
     private CancellationTokenSource? _conversionCts;
     private bool _updatingSelection;
+    private bool _syncingNvidiaToggle;
 
     public MainWindow()
     {
@@ -69,6 +72,10 @@ public partial class MainWindow : Window
         else if (e.PropertyName == nameof(AppViewModel.SelectedOutputFormat))
         {
             RefreshConverterOptions();
+        }
+        else if (e.PropertyName == nameof(AppViewModel.AdvancedArguments))
+        {
+            SyncNvidiaToggleFromArguments();
         }
     }
 
@@ -192,6 +199,48 @@ public partial class MainWindow : Window
         });
     }
 
+    private void HomeNav_Click(object sender, RoutedEventArgs e)
+        => ShowPage(home: true);
+
+    private void SettingsNav_Click(object sender, RoutedEventArgs e)
+        => ShowPage(home: false);
+
+    private void ShowPage(bool home)
+    {
+        HomePage.Visibility = home ? Visibility.Visible : Visibility.Collapsed;
+        SettingsPage.Visibility = home ? Visibility.Collapsed : Visibility.Visible;
+        HomeNavButton.Style = (Style)FindResource(home ? "ActiveNavButtonStyle" : "NavButtonStyle");
+        SettingsNavButton.Style = (Style)FindResource(home ? "NavButtonStyle" : "ActiveNavButtonStyle");
+    }
+
+    private void NvidiaAccelerationToggle_Checked(object sender, RoutedEventArgs e)
+    {
+        if (_syncingNvidiaToggle)
+        {
+            return;
+        }
+
+        var current = _viewModel.AdvancedArguments.Trim();
+        if (ContainsNvidiaAccelerationArguments(current))
+        {
+            return;
+        }
+
+        _viewModel.AdvancedArguments = string.IsNullOrWhiteSpace(current)
+            ? NvidiaAccelerationArguments
+            : $"{current} {NvidiaAccelerationArguments}";
+    }
+
+    private void NvidiaAccelerationToggle_Unchecked(object sender, RoutedEventArgs e)
+    {
+        if (_syncingNvidiaToggle)
+        {
+            return;
+        }
+
+        _viewModel.AdvancedArguments = RemoveNvidiaAccelerationArguments(_viewModel.AdvancedArguments);
+    }
+
     private void DropZone_DragOver(object sender, System.Windows.DragEventArgs e)
     {
         e.Effects = e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop)
@@ -286,6 +335,31 @@ public partial class MainWindow : Window
         Dispatcher.Invoke(() => _viewModel.AppendLog(message));
     }
 
+    private void SyncNvidiaToggleFromArguments()
+    {
+        _syncingNvidiaToggle = true;
+        try
+        {
+            NvidiaAccelerationToggle.IsChecked = ContainsNvidiaAccelerationArguments(_viewModel.AdvancedArguments);
+        }
+        finally
+        {
+            _syncingNvidiaToggle = false;
+        }
+    }
+
+    private static bool ContainsNvidiaAccelerationArguments(string arguments)
+    {
+        return arguments.Contains(NvidiaAccelerationArguments, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string RemoveNvidiaAccelerationArguments(string arguments)
+    {
+        return arguments
+            .Replace(NvidiaAccelerationArguments, "", StringComparison.OrdinalIgnoreCase)
+            .Trim();
+    }
+
     private static string BuildOutputPath(string inputPath, string outputDirectory, string outputFormat)
     {
         var fileName = Path.GetFileNameWithoutExtension(inputPath);
@@ -297,4 +371,22 @@ public partial class MainWindow : Window
 
         return Path.Combine(outputDirectory, $"{fileName}.{extension}");
     }
+
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        => SystemCommands.MinimizeWindow(this);
+
+    private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (WindowState == WindowState.Maximized)
+        {
+            SystemCommands.RestoreWindow(this);
+        }
+        else
+        {
+            SystemCommands.MaximizeWindow(this);
+        }
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+        => SystemCommands.CloseWindow(this);
 }
