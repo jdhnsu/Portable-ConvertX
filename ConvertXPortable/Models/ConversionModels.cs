@@ -79,10 +79,42 @@ public sealed class AppViewModel : INotifyPropertyChanged
     private string _logText = "";
     private string _statusText = "请选择一个文件开始。";
     private bool _isConverting;
+    private string _agentInputFilePath = "";
+    private string _agentOutputDirectory = "";
+    private string _agentSelectedOutputFormat = "";
+    private string _agentRequestText = "";
+    private string _agentChatInput = "";
+    private string _agentChatLog = "";
+    private string _agentCommandPreview = "";
+    private string _agentRecommendation = "";
+    private string _agentRiskText = "";
+    private string _agentStatusText = "请选择一个文件并配置 AI 模型。";
+    private string _agentTerminalLog = "";
+    private string _agentCommandInput = "";
+    private string _agentProviderType = AiProviderTypes.OpenAiCompatible;
+    private string _agentEndpoint = "";
+    private string _agentApiKey = "";
+    private string _agentModel = "";
+    private bool _isAgentBusy;
+    private bool _enableCommandLineExecution;
+    private bool _showChatEmptyState = true;
+    private AiHistoryItem? _selectedAgentHistory;
+
+    public AppViewModel()
+    {
+        AgentMessages.CollectionChanged += (_, _) =>
+        {
+            ShowChatEmptyState = AgentMessages.Count == 0;
+        };
+    }
 
     public ObservableCollection<string> OutputFormats { get; } = [];
     public ObservableCollection<ConverterOption> ConverterOptions { get; } = [];
     public ObservableCollection<ToolStatus> ToolStatuses { get; } = [];
+    public ObservableCollection<string> AgentOutputFormats { get; } = [];
+    public ObservableCollection<AiHistoryItem> AgentHistory { get; } = [];
+    public ObservableCollection<AiChatBubble> AgentMessages { get; } = [];
+    public ObservableCollection<string> AiProviderOptions { get; } = new(AiProviderTypes.All);
 
     public string RootStatusText { get; set; } = "";
     public string AvailableToolSummary { get; set; } = "";
@@ -165,12 +197,176 @@ public sealed class AppViewModel : INotifyPropertyChanged
         }
     }
 
+    public string AgentInputFilePath
+    {
+        get => _agentInputFilePath;
+        set
+        {
+            if (SetField(ref _agentInputFilePath, value))
+            {
+                OnPropertyChanged(nameof(CanStart));
+                OnPropertyChanged(nameof(CanStartAgent));
+            }
+        }
+    }
+
+    public string AgentOutputDirectory
+    {
+        get => _agentOutputDirectory;
+        set
+        {
+            if (SetField(ref _agentOutputDirectory, value))
+            {
+                OnPropertyChanged(nameof(CanStart));
+                OnPropertyChanged(nameof(CanStartAgent));
+            }
+        }
+    }
+
+    public string AgentSelectedOutputFormat
+    {
+        get => _agentSelectedOutputFormat;
+        set
+        {
+            if (SetField(ref _agentSelectedOutputFormat, value))
+            {
+                OnPropertyChanged(nameof(CanStart));
+                OnPropertyChanged(nameof(CanStartAgent));
+            }
+        }
+    }
+
+    public string AgentRequestText
+    {
+        get => _agentRequestText;
+        set => SetField(ref _agentRequestText, value);
+    }
+
+    public string AgentChatInput
+    {
+        get => _agentChatInput;
+        set
+        {
+            if (SetField(ref _agentChatInput, value))
+            {
+                OnPropertyChanged(nameof(CanSendChat));
+            }
+        }
+    }
+
+    public string AgentChatLog
+    {
+        get => _agentChatLog;
+        set => SetField(ref _agentChatLog, value);
+    }
+
+    public string AgentCommandPreview
+    {
+        get => _agentCommandPreview;
+        set => SetField(ref _agentCommandPreview, value);
+    }
+
+    public string AgentRecommendation
+    {
+        get => _agentRecommendation;
+        set => SetField(ref _agentRecommendation, value);
+    }
+
+    public string AgentRiskText
+    {
+        get => _agentRiskText;
+        set => SetField(ref _agentRiskText, value);
+    }
+
+    public string AgentStatusText
+    {
+        get => _agentStatusText;
+        set => SetField(ref _agentStatusText, value);
+    }
+
+    public string AgentTerminalLog
+    {
+        get => _agentTerminalLog;
+        set => SetField(ref _agentTerminalLog, value);
+    }
+
+    public string AgentCommandInput
+    {
+        get => _agentCommandInput;
+        set => SetField(ref _agentCommandInput, value);
+    }
+
+    public string AgentProviderType
+    {
+        get => _agentProviderType;
+        set => SetField(ref _agentProviderType, value);
+    }
+
+    public string AgentEndpoint
+    {
+        get => _agentEndpoint;
+        set => SetField(ref _agentEndpoint, value);
+    }
+
+    public string AgentApiKey
+    {
+        get => _agentApiKey;
+        set => SetField(ref _agentApiKey, value);
+    }
+
+    public string AgentModel
+    {
+        get => _agentModel;
+        set => SetField(ref _agentModel, value);
+    }
+
+    public bool IsAgentBusy
+    {
+        get => _isAgentBusy;
+        set
+        {
+            if (SetField(ref _isAgentBusy, value))
+            {
+                OnPropertyChanged(nameof(CanStartAgent));
+                OnPropertyChanged(nameof(CanSendChat));
+            }
+        }
+    }
+
+    public bool ShowChatEmptyState
+    {
+        get => _showChatEmptyState;
+        private set => SetField(ref _showChatEmptyState, value);
+    }
+
+    public bool EnableCommandLineExecution
+    {
+        get => _enableCommandLineExecution;
+        set => SetField(ref _enableCommandLineExecution, value);
+    }
+
+    public AiHistoryItem? SelectedAgentHistory
+    {
+        get => _selectedAgentHistory;
+        set => SetField(ref _selectedAgentHistory, value);
+    }
+
     public bool CanStart =>
         !IsConverting &&
         File.Exists(InputFilePath) &&
         Directory.Exists(OutputDirectory) &&
         !string.IsNullOrWhiteSpace(SelectedOutputFormat) &&
         SelectedConverterOption is { Tool.IsAvailable: true };
+
+    public bool CanStartAgent =>
+        !IsAgentBusy &&
+        File.Exists(AgentInputFilePath) &&
+        Directory.Exists(AgentOutputDirectory) &&
+        !string.IsNullOrWhiteSpace(AgentSelectedOutputFormat);
+
+    public bool CanSendChat =>
+        !IsAgentBusy &&
+        !string.IsNullOrWhiteSpace(AgentChatInput);
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -179,6 +375,34 @@ public sealed class AppViewModel : INotifyPropertyChanged
         LogText += message.EndsWith(Environment.NewLine, StringComparison.Ordinal)
             ? message
             : message + Environment.NewLine;
+    }
+
+    public void AppendAgentTerminal(string message)
+    {
+        AgentTerminalLog += message.EndsWith(Environment.NewLine, StringComparison.Ordinal)
+            ? message
+            : message + Environment.NewLine;
+    }
+
+    public void AppendAgentChat(string message)
+    {
+        AgentChatLog += message.EndsWith(Environment.NewLine, StringComparison.Ordinal)
+            ? message
+            : message + Environment.NewLine;
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        if (message.StartsWith("你: ", StringComparison.Ordinal))
+        {
+            AgentMessages.Add(new AiChatBubble { Role = "user", Content = message[3..].Trim() });
+        }
+        else if (message.StartsWith("AI: ", StringComparison.Ordinal))
+        {
+            AgentMessages.Add(new AiChatBubble { Role = "assistant", Content = message[4..].Trim() });
+        }
     }
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

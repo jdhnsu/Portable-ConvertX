@@ -19,6 +19,18 @@ public sealed class ConversionExecutor(PathResolver pathResolver)
         Action<string> log,
         CancellationToken cancellationToken)
     {
+        var inputExtension = ConversionRouter.NormalizeExtension(Path.GetExtension(inputPath));
+        string actualInputPath = inputPath;
+        string actualOutputPath = outputPath;
+        string? intermediateDocxPath = null;
+
+        if (inputExtension == "pdf" && outputFormat.Equals("doc", StringComparison.OrdinalIgnoreCase))
+        {
+            intermediateDocxPath = Path.Combine(outputDirectory, Path.GetFileNameWithoutExtension(inputPath) + ".docx");
+            actualInputPath = inputPath;
+            actualOutputPath = intermediateDocxPath;
+        }
+
         var executable = pathResolver.ResolveToolPath(option.Rule.Executable);
         if (!File.Exists(executable))
         {
@@ -29,8 +41,8 @@ public sealed class ConversionExecutor(PathResolver pathResolver)
 
         var arguments = ArgumentTemplate.BuildArguments(
             option.Rule.ArgumentTemplate,
-            inputPath,
-            outputPath,
+            actualInputPath,
+            actualOutputPath,
             outputDirectory,
             outputFormat,
             advancedArguments).ToList();
@@ -39,11 +51,11 @@ public sealed class ConversionExecutor(PathResolver pathResolver)
             .Value;
         if (!string.IsNullOrWhiteSpace(extraTemplate))
         {
-            var outputIndex = arguments.FindIndex(argument => string.Equals(argument, outputPath, StringComparison.OrdinalIgnoreCase));
+            var outputIndex = arguments.FindIndex(argument => string.Equals(argument, actualOutputPath, StringComparison.OrdinalIgnoreCase));
             var extraArguments = ArgumentTemplate.BuildArguments(
                 extraTemplate,
-                inputPath,
-                outputPath,
+                actualInputPath,
+                actualOutputPath,
                 outputDirectory,
                 outputFormat,
                 "");
@@ -111,7 +123,7 @@ public sealed class ConversionExecutor(PathResolver pathResolver)
 
         if (option.Rule.PipeInputToStdin)
         {
-            await using var inputStream = File.OpenRead(inputPath);
+            await using var inputStream = File.OpenRead(actualInputPath);
             await inputStream.CopyToAsync(process.StandardInput.BaseStream, cancellationToken);
             process.StandardInput.Close();
         }
@@ -127,7 +139,6 @@ public sealed class ConversionExecutor(PathResolver pathResolver)
             }
             catch
             {
-                // The process may already have exited between HasExited and Kill.
             }
         });
 
@@ -135,9 +146,96 @@ public sealed class ConversionExecutor(PathResolver pathResolver)
         _currentProcess = null;
         if (process.ExitCode == 0 && option.Rule.WriteStdoutToOutput)
         {
-            await File.WriteAllTextAsync(outputPath, stdoutCapture.ToString(), cancellationToken);
+            await File.WriteAllTextAsync(actualOutputPath, stdoutCapture.ToString(), cancellationToken);
             log("");
-            log("Stdout 已写入: " + outputPath);
+            log("Stdout 已写入: " + actualOutputPath);
+        }
+
+        if (intermediateDocxPath is not null && process.ExitCode == 0)
+        {
+            log("");
+            log("=== 步骤 2: DOCX → DOC ===");
+            log("");
+
+            var step2Arguments = ArgumentTemplate.BuildArguments(
+                option.Rule.ArgumentTemplate,
+                intermediateDocxPath,
+                outputPath,
+                outputDirectory,
+                "doc",
+                advancedArguments).ToList();
+
+            var startInfo2 = new ProcessStartInfo
+            {
+                FileName = executable,
+                WorkingDirectory = Path.GetDirectoryName(executable) ?? pathResolver.TestToolsRoot,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = false,
+                CreateNoWindow = true
+            };
+
+            foreach (var argument in step2Arguments)
+            {
+                startInfo2.ArgumentList.Add(argument);
+            }
+
+            log("Executable: " + executable);
+            log("Arguments: " + string.Join(" ", step2Arguments.Select(QuoteForDisplay)));
+            log("");
+
+            using var process2 = new Process { StartInfo = startInfo2, EnableRaisingEvents = true };
+            _currentProcess = process2;
+
+            process2.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data is not null) log(e.Data);
+            };
+            process2.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data is not null) log(e.Data);
+            };
+
+            if (!process2.Start())
+            {
+                throw new InvalidOperationException("无法启动转换器进程。");
+            }
+
+            process2.BeginOutputReadLine();
+            process2.BeginErrorReadLine();
+
+            await using var registration2 = cancellationToken.Register(() =>
+            {
+                try
+                {
+                    if (!process2.HasExited)
+                    {
+                        process2.Kill(entireProcessTree: true);
+                    }
+                }
+                catch
+                {
+                }
+            });
+
+            await process2.WaitForExitAsync(CancellationToken.None);
+            _currentProcess = null;
+
+            try
+            {
+                if (File.Exists(intermediateDocxPath))
+                {
+                    File.Delete(intermediateDocxPath);
+                    log("");
+                    log("已删除中间文件: " + intermediateDocxPath);
+                }
+            }
+            catch
+            {
+            }
+
+            return process2.ExitCode;
         }
 
         return process.ExitCode;
