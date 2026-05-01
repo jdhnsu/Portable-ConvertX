@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using ConvertXPortable.Models;
 using ConvertXPortable.Services;
 using Microsoft.Win32;
@@ -12,6 +14,16 @@ namespace ConvertXPortable;
 
 public partial class MainWindow : Window
 {
+    private const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
+    private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+    private const int DWMSBT_MAINWINDOW = 2;
+    private const int WM_SETTINGCHANGE = 0x001A;
+    private const string IMMERSIVE_COLOR_SET = "ImmersiveColorSet";
+    private const int BUILD_WIN11 = 22000;
+
+    [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
     private const string NvidiaAccelerationArguments = "-hwaccel cuda -c:v h264_nvenc";
 
     private readonly AppViewModel _viewModel = new();
@@ -27,6 +39,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        SourceInitialized += OnSourceInitialized;
 
         _configurationService = new ConfigurationService(_pathResolver);
         var catalog = _configurationService.LoadToolCatalog();
@@ -389,4 +402,52 @@ public partial class MainWindow : Window
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)
         => SystemCommands.CloseWindow(this);
+
+    private void OnSourceInitialized(object? sender, EventArgs e)
+    {
+        var hwnd = new WindowInteropHelper(this).Handle;
+        var source = HwndSource.FromHwnd(hwnd);
+        source?.AddHook(WndProc);
+        ApplyMica(hwnd);
+    }
+
+    private void ApplyMica(IntPtr hwnd)
+    {
+        var isWin11 = Environment.OSVersion.Version.Build >= BUILD_WIN11;
+
+        if (isWin11)
+        {
+            var backdrop = DWMSBT_MAINWINDOW;
+            DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ref backdrop, sizeof(int));
+            ApplyDarkMode(hwnd);
+        }
+        else
+        {
+            RootGrid.Background = new System.Windows.Media.LinearGradientBrush(
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#101419"),
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#1C2026"),
+                new System.Windows.Point(0, 0),
+                new System.Windows.Point(1, 1));
+            ApplyDarkMode(hwnd);
+        }
+    }
+
+    private void ApplyDarkMode(IntPtr hwnd)
+    {
+        var useDark = 1;
+        DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref useDark, sizeof(int));
+    }
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg == WM_SETTINGCHANGE)
+        {
+            var str = Marshal.PtrToStringUni(lParam);
+            if (str == IMMERSIVE_COLOR_SET)
+            {
+                ApplyMica(hwnd);
+            }
+        }
+        return IntPtr.Zero;
+    }
 }

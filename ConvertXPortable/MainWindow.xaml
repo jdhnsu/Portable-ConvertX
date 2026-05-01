@@ -7,11 +7,11 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         FontFamily="Inter, Segoe UI, Microsoft YaHei UI"
-        Background="#B31C2026">
+        Background="Transparent">
   <shell:WindowChrome.WindowChrome>
     <shell:WindowChrome CaptionHeight="56"
                         ResizeBorderThickness="8"
-                        GlassFrameThickness="0"
+                        GlassFrameThickness="-1"
                         UseAeroCaptionButtons="False"
                         CornerRadius="12" />
   </shell:WindowChrome.WindowChrome>
@@ -101,6 +101,7 @@
           <ControlTemplate TargetType="ComboBox">
             <Grid>
               <ToggleButton x:Name="DropDownToggle"
+                            Background="{TemplateBinding Background}"
                             Focusable="False"
                             ClickMode="Press"
                             IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
@@ -161,8 +162,8 @@
                 <Border MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
                         MaxHeight="{TemplateBinding MaxDropDownHeight}"
                         Margin="0,4,0,0"
-                        Background="#F01C2026"
-                        BorderBrush="#33FFFFFF"
+                        Background="#1C2026"
+                        BorderBrush="{StaticResource LineSoftBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="4">
@@ -173,7 +174,9 @@
                                       Color="#000000"
                                       Opacity="0.5" />
                   </Border.Effect>
-                  <ScrollViewer CanContentScroll="True">
+                  <ScrollViewer CanContentScroll="True"
+                                VerticalScrollBarVisibility="Hidden"
+                                HorizontalScrollBarVisibility="Disabled">
                     <ItemsPresenter />
                   </ScrollViewer>
                 </Border>
@@ -191,7 +194,7 @@
 
     <Style TargetType="ComboBoxItem">
       <Setter Property="MinHeight" Value="32" />
-      <Setter Property="Padding" Value="9,6" />
+      <Setter Property="Padding" Value="10,8" />
       <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="Template">
@@ -201,7 +204,10 @@
                     Background="{TemplateBinding Background}"
                     CornerRadius="6"
                     Padding="{TemplateBinding Padding}">
-              <ContentPresenter VerticalAlignment="Center" />
+              <TextBlock VerticalAlignment="Center"
+                         Foreground="{TemplateBinding Foreground}">
+                <ContentPresenter x:Name="ContentHost" />
+              </TextBlock>
             </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsHighlighted" Value="True">
@@ -509,14 +515,7 @@
     </Style>
   </Window.Resources>
 
-  <Grid>
-    <Grid.Background>
-      <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#101419" Offset="0" />
-        <GradientStop Color="#181C22" Offset="0.48" />
-        <GradientStop Color="#1C2026" Offset="1" />
-      </LinearGradientBrush>
-    </Grid.Background>
+  <Grid x:Name="RootGrid">
 
     <Border x:Name="ShellBorder"
             BorderBrush="#1FFFFFFF"
@@ -766,7 +765,7 @@
           </Border>
 
           <Grid Grid.Column="1">
-            <ScrollViewer x:Name="HomePage" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="HomePage" VerticalScrollBarVisibility="Hidden">
               <StackPanel Margin="14,12,14,14">
                 <DockPanel x:Name="HomeSection" Margin="0,0,0,10">
                 <StackPanel>
@@ -1008,7 +1007,7 @@
               </StackPanel>
             </ScrollViewer>
 
-            <ScrollViewer x:Name="SettingsPage" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+            <ScrollViewer x:Name="SettingsPage" VerticalScrollBarVisibility="Hidden" Visibility="Collapsed">
               <StackPanel Margin="14,12,14,14">
                 <StackPanel x:Name="SettingsSection">
                 <DockPanel Margin="0,0,0,12">
@@ -1020,34 +1019,6 @@
                                Margin="0,6,0,0" />
                   </StackPanel>
                 </DockPanel>
-
-                <Border Style="{StaticResource PanelBorderStyle}" Margin="0,0,0,12">
-                  <StackPanel>
-                    <DockPanel Margin="0,0,0,10">
-                      <Border DockPanel.Dock="Right" Style="{StaticResource TagStyle}">
-                        <TextBlock Text="General" Foreground="#A3C9FF" FontSize="12" FontWeight="SemiBold" />
-                      </Border>
-                      <TextBlock Text="通用设置" FontSize="17" FontWeight="SemiBold" />
-                    </DockPanel>
-                    <Grid>
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="14" />
-                        <ColumnDefinition Width="*" />
-                      </Grid.ColumnDefinitions>
-                      <StackPanel>
-                        <TextBlock Text="默认输出文件夹" Style="{StaticResource FieldLabelStyle}" />
-                        <TextBox Text="{Binding OutputDirectory, UpdateSourceTrigger=PropertyChanged}" />
-                      </StackPanel>
-                      <StackPanel Grid.Column="2">
-                        <TextBlock Text="默认转换器" Style="{StaticResource FieldLabelStyle}" />
-                        <ComboBox ItemsSource="{Binding ConverterOptions}"
-                                  SelectedItem="{Binding SelectedConverterOption}"
-                                  DisplayMemberPath="DisplayName" />
-                      </StackPanel>
-                    </Grid>
-                  </StackPanel>
-                </Border>
 
                 <Border x:Name="ConverterManagementSection" Style="{StaticResource PanelBorderStyle}" Margin="0,0,0,12">
                   <StackPanel>
