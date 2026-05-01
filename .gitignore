@@ -8,3 +8,6 @@ TestTools/*
 ConvertXPortable/obj/*
 test/*
 .kilo/*
+ai-settings.json
+ai-history.json
+*.env
