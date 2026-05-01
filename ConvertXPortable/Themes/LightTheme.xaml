@@ -1,0 +1,90 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <SolidColorBrush x:Key="TextBrush" Color="#1F2937" />
+  <SolidColorBrush x:Key="MutedBrush" Color="#475569" />
+  <SolidColorBrush x:Key="QuietBrush" Color="#64748B" />
+  <SolidColorBrush x:Key="SubtleBrush" Color="#94A3B8" />
+
+  <SolidColorBrush x:Key="AccentBrush" Color="#0067C0" />
+  <SolidColorBrush x:Key="AccentHoverBrush" Color="#1976C8" />
+  <SolidColorBrush x:Key="AccentSoftBrush" Color="#1A0067C0" />
+  <SolidColorBrush x:Key="AccentBorderBrush" Color="#660067C0" />
+  <SolidColorBrush x:Key="AccentForegroundBrush" Color="White" />
+  <SolidColorBrush x:Key="AccentTextBrush" Color="#0067C0" />
+
+  <SolidColorBrush x:Key="SuccessBrush" Color="#16A34A" />
+  <SolidColorBrush x:Key="SuccessTextBrush" Color="#15803D" />
+  <SolidColorBrush x:Key="SuccessSoftTextBrush" Color="#22C55E" />
+  <SolidColorBrush x:Key="SuccessBgBrush" Color="#80F0FDF4" />
+  <SolidColorBrush x:Key="SuccessBorderBrush" Color="#FFBBF7D0" />
+  <SolidColorBrush x:Key="SuccessTagBgBrush" Color="#80DCFCE7" />
+  <SolidColorBrush x:Key="SuccessTagBorderBrush" Color="#FFBBF7D0" />
+
+  <SolidColorBrush x:Key="WarningBrush" Color="#EA580C" />
+  <SolidColorBrush x:Key="WarningTextBrush" Color="#C2410C" />
+  <SolidColorBrush x:Key="WarningTagBgBrush" Color="#80FED7AA" />
+
+  <SolidColorBrush x:Key="WindowOuterBrush" Color="Transparent" />
+  <SolidColorBrush x:Key="ShellBackgroundBrush" Color="#BFF9F9FF" />
+  <SolidColorBrush x:Key="ShellBorderBrush" Color="#66FFFFFF" />
+  <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="#33FFFFFF" />
+  <SolidColorBrush x:Key="TopBarBorderBrush" Color="#33CBD5E1" />
+  <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#1AFFFFFF" />
+  <SolidColorBrush x:Key="SidebarBorderBrush" Color="#33CBD5E1" />
+
+  <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#80FFFFFF" />
+  <SolidColorBrush x:Key="PanelSoftBackgroundBrush" Color="#4DFFFFFF" />
+  <SolidColorBrush x:Key="PanelBorderBrush" Color="#FFE2E8F0" />
+  <SolidColorBrush x:Key="LineBrush" Color="#FFE2E8F0" />
+  <SolidColorBrush x:Key="LineSoftBrush" Color="#33CBD5E1" />
+
+  <SolidColorBrush x:Key="InputBackgroundBrush" Color="#80FFFFFF" />
+  <SolidColorBrush x:Key="InputBorderBrush" Color="#FFE2E8F0" />
+  <SolidColorBrush x:Key="InputHoverBackgroundBrush" Color="#BFFFFFFF" />
+  <SolidColorBrush x:Key="InputHoverBorderBrush" Color="#FFCBD5E1" />
+
+  <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#FFFFFFFF" />
+  <SolidColorBrush x:Key="ButtonBorderBrush" Color="#FFE2E8F0" />
+  <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#FFF8FAFC" />
+  <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="#FFCBD5E1" />
+  <SolidColorBrush x:Key="ButtonTextBrush" Color="#334155" />
+
+  <SolidColorBrush x:Key="DropZoneBackgroundBrush" Color="#4DFFFFFF" />
+  <SolidColorBrush x:Key="DropZoneHoverBackgroundBrush" Color="#80FFFFFF" />
+  <SolidColorBrush x:Key="DropZoneBorderBrush" Color="#FFCBD5E1" />
+
+  <SolidColorBrush x:Key="SwitchOffBrush" Color="#FFE2E8F0" />
+  <SolidColorBrush x:Key="SwitchThumbBrush" Color="#FFFFFFFF" />
+
+  <SolidColorBrush x:Key="PopupBackgroundBrush" Color="#F2FFFFFF" />
+  <SolidColorBrush x:Key="PopupBorderBrush" Color="#FFE2E8F0" />
+  <SolidColorBrush x:Key="PopupItemHoverBrush" Color="#FFF1F5F9" />
+
+  <SolidColorBrush x:Key="ActiveNavBackgroundBrush" Color="#1A0067C0" />
+  <SolidColorBrush x:Key="ActiveNavBorderBrush" Color="#330067C0" />
+  <SolidColorBrush x:Key="ActiveNavForegroundBrush" Color="#0067C0" />
+  <SolidColorBrush x:Key="NavHoverBackgroundBrush" Color="#4DFFFFFF" />
+
+  <SolidColorBrush x:Key="WindowControlHoverBrush" Color="#14000000" />
+  <SolidColorBrush x:Key="WindowControlPressedBrush" Color="#29000000" />
+  <SolidColorBrush x:Key="WindowControlForegroundBrush" Color="#475569" />
+
+  <SolidColorBrush x:Key="TagBackgroundBrush" Color="#1A0067C0" />
+  <SolidColorBrush x:Key="TagForegroundBrush" Color="#0067C0" />
+
+  <SolidColorBrush x:Key="TerminalBrush" Color="#E6171717" />
+  <SolidColorBrush x:Key="TerminalBarBrush" Color="#FF0F0F0F" />
+  <SolidColorBrush x:Key="TerminalForegroundBrush" Color="#B3FFFFFF" />
+  <SolidColorBrush x:Key="TerminalLabelBrush" Color="#66FFFFFF" />
+  <SolidColorBrush x:Key="TerminalDividerBrush" Color="#0DFFFFFF" />
+
+  <SolidColorBrush x:Key="ThemeCardBackgroundBrush" Color="#80FFFFFF" />
+  <SolidColorBrush x:Key="ThemeCardBorderBrush" Color="#FFE2E8F0" />
+  <SolidColorBrush x:Key="ThemeCardSelectedBorderBrush" Color="#0067C0" />
+  <SolidColorBrush x:Key="ThemeCardSwatchBorderBrush" Color="#FFE2E8F0" />
+
+  <Color x:Key="LogoGradientStartColor">#0067C0</Color>
+  <Color x:Key="LogoGradientEndColor">#00A38A</Color>
+  <Color x:Key="AccentShadowColor">#0067C0</Color>
+</ResourceDictionary>

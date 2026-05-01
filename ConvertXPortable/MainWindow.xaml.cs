@@ -40,6 +40,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SourceInitialized += OnSourceInitialized;
+        ThemeManager.ThemeChanged += OnThemeChanged;
+        Loaded += (_, _) => UpdateThemeCardSelection();
+        Closed += (_, _) => ThemeManager.ThemeChanged -= OnThemeChanged;
 
         _configurationService = new ConfigurationService(_pathResolver);
         var catalog = _configurationService.LoadToolCatalog();
@@ -414,27 +417,28 @@ public partial class MainWindow : Window
     private void ApplyMica(IntPtr hwnd)
     {
         var isWin11 = Environment.OSVersion.Version.Build >= BUILD_WIN11;
+        var dark = ThemeManager.IsDarkActive;
 
         if (isWin11)
         {
             var backdrop = DWMSBT_MAINWINDOW;
             DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ref backdrop, sizeof(int));
-            ApplyDarkMode(hwnd);
         }
         else
         {
+            var (start, end) = dark ? ("#101419", "#1C2026") : ("#F2F3FB", "#F9F9FF");
             RootGrid.Background = new System.Windows.Media.LinearGradientBrush(
-                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#101419"),
-                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#1C2026"),
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(start),
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(end),
                 new System.Windows.Point(0, 0),
                 new System.Windows.Point(1, 1));
-            ApplyDarkMode(hwnd);
         }
+        ApplyDarkMode(hwnd, dark);
     }
 
-    private void ApplyDarkMode(IntPtr hwnd)
+    private void ApplyDarkMode(IntPtr hwnd, bool useDarkMode)
     {
-        var useDark = 1;
+        var useDark = useDarkMode ? 1 : 0;
         DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref useDark, sizeof(int));
     }
 
@@ -445,9 +449,57 @@ public partial class MainWindow : Window
             var str = Marshal.PtrToStringUni(lParam);
             if (str == IMMERSIVE_COLOR_SET)
             {
+                if (ThemeManager.CurrentMode == AppTheme.System)
+                {
+                    ThemeManager.Apply(AppTheme.System);
+                }
                 ApplyMica(hwnd);
             }
         }
         return IntPtr.Zero;
+    }
+
+    private void ThemeCardLight_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        => ThemeManager.Apply(AppTheme.Light);
+
+    private void ThemeCardDark_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        => ThemeManager.Apply(AppTheme.Dark);
+
+    private void ThemeCardSystem_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        => ThemeManager.Apply(AppTheme.System);
+
+    private void OnThemeChanged(object? sender, bool isDark)
+    {
+        var hwnd = new WindowInteropHelper(this).Handle;
+        if (hwnd != IntPtr.Zero)
+        {
+            ApplyMica(hwnd);
+        }
+        UpdateThemeCardSelection();
+    }
+
+    private void UpdateThemeCardSelection()
+    {
+        if (ThemeCardLight is null || ThemeCardDark is null || ThemeCardSystem is null)
+        {
+            return;
+        }
+
+        var unselected = TryFindResource("ThemeCardBorderBrush") as System.Windows.Media.Brush
+            ?? System.Windows.Media.Brushes.Transparent;
+        var selected = TryFindResource("ThemeCardSelectedBorderBrush") as System.Windows.Media.Brush
+            ?? unselected;
+
+        ThemeCardLight.BorderBrush = unselected;
+        ThemeCardDark.BorderBrush = unselected;
+        ThemeCardSystem.BorderBrush = unselected;
+
+        var active = ThemeManager.CurrentMode switch
+        {
+            AppTheme.Dark => ThemeCardDark,
+            AppTheme.System => ThemeCardSystem,
+            _ => ThemeCardLight
+        };
+        active.BorderBrush = selected;
     }
 }

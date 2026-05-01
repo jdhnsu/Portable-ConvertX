@@ -6,8 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>..\design\icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\conversions.json" Link="conversions.json" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="..\design\icon.ico" Link="Resources\icon.ico" />
   </ItemGroup>
 </Project>
