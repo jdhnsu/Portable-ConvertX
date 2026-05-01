@@ -33,7 +33,14 @@ Portable ConvertX is a WPF-based Windows desktop application that serves as a gr
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Installation
+
+1. Download the latest release from [Feishu](https://my.feishu.cn/docx/HNvrdXQpqoCFK1xY3itcS2rensd?from=from_copylink).
+
+
+### Building from Source
+
+#### Prerequisites
 
 - **Operating System**: Windows 10/11
 - **.NET SDK**: Version 6.0 or higher

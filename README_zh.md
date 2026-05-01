@@ -33,7 +33,10 @@ Portable ConvertX 是一个基于 WPF 的 Windows 桌面应用程序，作为 `T
 
 ## 🚀 快速开始
 
-### 前置要求
+### 预先构建好的版本
+1. 下载打包好的 [最新版本](https://my.feishu.cn/docx/HNvrdXQpqoCFK1xY3itcS2rensd?from=from_copylink)
+
+### 自行构建前置要求
 
 - **操作系统**: Windows 10/11
 - **.NET SDK**: 6.0 或更高版本
