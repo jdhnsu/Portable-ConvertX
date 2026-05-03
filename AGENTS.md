@@ -6,7 +6,14 @@
 dotnet run --project .\ConvertXPortable\ConvertXPortable.csproj
 ```
 
-Single-project solution (`ConvertXPortable`), `net8.0-windows`, WPF + WinForms (only WinForms used is `FolderBrowserDialog`). No NuGet dependencies. No tests, no CI.
+Single-project solution (`ConvertXPortable`), `net8.0-windows`, WPF + WinForms (WinForms used only for `FolderBrowserDialog`). No NuGet dependencies. No tests, no CI.
+
+## Release build
+
+```powershell
+.\publish.ps1
+```
+Interactive script — asks for version number, runs `dotnet publish`, copies `conversions.json` + `TestTools/` to output, creates a zip and 7z split volumes with SHA256 checksums.
 
 ## Config files
 

@@ -11,3 +11,4 @@ test/*
 ai-settings.json
 ai-history.json
 *.env
+c.md
