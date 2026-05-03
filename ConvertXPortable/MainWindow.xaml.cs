@@ -38,8 +38,11 @@ public partial class MainWindow : Window
     private readonly AiHistoryService _aiHistoryService;
     private readonly AiChatService _aiChatService;
     private readonly AiConversionPlanner _aiPlanner;
+    private readonly McpSettingsService _mcpSettingsService;
+    private readonly McpHttpServer _mcpServer;
     private AiSettings _aiSettings;
     private AiHistoryDocument _aiHistory;
+    private McpSettings _mcpSettings;
     private AiPlanResult? _lastAiPlan;
     private CancellationTokenSource? _conversionCts;
     private CancellationTokenSource? _agentCts;
@@ -53,7 +56,6 @@ public partial class MainWindow : Window
         SourceInitialized += OnSourceInitialized;
         ThemeManager.ThemeChanged += OnThemeChanged;
         Loaded += (_, _) => UpdateThemeCardSelection();
-        Closed += (_, _) => ThemeManager.ThemeChanged -= OnThemeChanged;
 
         _configurationService = new ConfigurationService(_pathResolver);
         var catalog = _configurationService.LoadToolCatalog();
@@ -66,8 +68,23 @@ public partial class MainWindow : Window
         _aiHistoryService = new AiHistoryService();
         _aiChatService = new AiChatService();
         _aiPlanner = new AiConversionPlanner(_pathResolver, _router, _commandPreviewBuilder, _aiChatService);
+        _mcpSettingsService = new McpSettingsService();
+        _mcpServer = new McpHttpServer(_pathResolver, _router, toolStatuses);
         _aiSettings = _aiSettingsService.Load();
         _aiHistory = _aiHistoryService.Load();
+        _mcpSettings = _mcpSettingsService.Load();
+        Loaded += async (_, _) =>
+        {
+            if (_mcpSettings.IsEnabled)
+            {
+                await StartMcpAsync(showPrompt: false);
+            }
+        };
+        Closed += (_, _) =>
+        {
+            ThemeManager.ThemeChanged -= OnThemeChanged;
+            _mcpServer.Stop();
+        };
 
         foreach (var toolStatus in toolStatuses)
         {
@@ -80,6 +97,7 @@ public partial class MainWindow : Window
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
         LoadAiSettingsIntoViewModel();
         LoadAiHistoryIntoViewModel();
+        LoadMcpSettingsIntoViewModel();
 
         if (!File.Exists(_pathResolver.ToolsJsonPath))
         {
@@ -1225,6 +1243,121 @@ public partial class MainWindow : Window
         _aiSettings.Model = _viewModel.AgentModel;
         _aiSettings.EnableCommandLineExecution = _viewModel.EnableCommandLineExecution;
         _aiSettingsService.Save(_aiSettings);
+    }
+
+    private void LoadMcpSettingsIntoViewModel()
+    {
+        _viewModel.IsMcpEnabled = _mcpSettings.IsEnabled;
+        _viewModel.McpPort = _mcpSettings.Port;
+        _viewModel.McpRequireToken = _mcpSettings.RequireToken;
+        _viewModel.McpToken = _mcpSettings.Token;
+        _viewModel.McpDocsUrl = $"http://127.0.0.1:{_mcpSettings.Port}/docs";
+        _viewModel.McpStatusText = _mcpSettings.IsEnabled ? "MCP 正在准备启动..." : "MCP 未启用。";
+    }
+
+    private void SaveMcpSettingsFromViewModel()
+    {
+        _mcpSettings.IsEnabled = _viewModel.IsMcpEnabled;
+        _mcpSettings.Port = _viewModel.McpPort <= 0 ? 8765 : _viewModel.McpPort;
+        _mcpSettings.RequireToken = _viewModel.McpRequireToken;
+        _mcpSettings.Token = string.IsNullOrWhiteSpace(_viewModel.McpToken)
+            ? McpSettingsService.GenerateToken()
+            : _viewModel.McpToken;
+        _viewModel.McpPort = _mcpSettings.Port;
+        _viewModel.McpToken = _mcpSettings.Token;
+        _viewModel.McpDocsUrl = $"http://127.0.0.1:{_mcpSettings.Port}/docs";
+        _mcpSettingsService.Save(_mcpSettings);
+    }
+
+    private async void McpEnabled_Checked(object sender, RoutedEventArgs e)
+    {
+        _viewModel.IsMcpEnabled = true;
+        await StartMcpAsync(showPrompt: true);
+    }
+
+    private void McpEnabled_Unchecked(object sender, RoutedEventArgs e)
+    {
+        _viewModel.IsMcpEnabled = false;
+        StopMcp();
+    }
+
+    private async Task StartMcpAsync(bool showPrompt)
+    {
+        try
+        {
+            SaveMcpSettingsFromViewModel();
+            _mcpSettings.IsEnabled = true;
+            _mcpSettingsService.Save(_mcpSettings);
+            _viewModel.McpStatusText = "MCP 正在启动...";
+            await _mcpServer.StartAsync(_mcpSettings);
+            _viewModel.McpDocsUrl = _mcpServer.DocsUrl;
+            _viewModel.McpStatusText = $"MCP 运行中: {_mcpServer.BaseUrl}";
+            _viewModel.IsMcpEnabled = true;
+
+            if (showPrompt)
+            {
+                System.Windows.MessageBox.Show(
+                    this,
+                    $"MCP 已成功开启。\n\n接口文档: {_mcpServer.DocsUrl}",
+                    "MCP 已开启",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            _mcpServer.Stop();
+            _mcpSettings.IsEnabled = false;
+            _mcpSettingsService.Save(_mcpSettings);
+            _viewModel.IsMcpEnabled = false;
+            _viewModel.McpStatusText = "MCP 启动失败: " + ex.Message;
+        }
+    }
+
+    private void StopMcp()
+    {
+        _mcpServer.Stop();
+        _mcpSettings.IsEnabled = false;
+        _mcpSettingsService.Save(_mcpSettings);
+        _viewModel.McpStatusText = "MCP 已关闭。";
+    }
+
+    private void McpSaveSettings_Click(object sender, RoutedEventArgs e)
+    {
+        var restart = _mcpServer.IsRunning && _viewModel.IsMcpEnabled;
+        if (_mcpServer.IsRunning)
+        {
+            _mcpServer.Stop();
+        }
+
+        SaveMcpSettingsFromViewModel();
+        if (restart || _viewModel.IsMcpEnabled)
+        {
+            _ = StartMcpAsync(showPrompt: false);
+        }
+        else
+        {
+            _viewModel.McpStatusText = "MCP 设置已保存。";
+        }
+    }
+
+    private void McpRegenerateToken_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.McpToken = McpSettingsService.GenerateToken();
+        SaveMcpSettingsFromViewModel();
+        _viewModel.McpStatusText = "MCP token 已重新生成。";
+    }
+
+    private void McpOpenDocs_Click(object sender, RoutedEventArgs e)
+    {
+        var url = string.IsNullOrWhiteSpace(_viewModel.McpDocsUrl)
+            ? $"http://127.0.0.1:{_viewModel.McpPort}/docs"
+            : _viewModel.McpDocsUrl;
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        });
     }
 
     private void UpdateAdvancedCommandUi()

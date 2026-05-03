@@ -98,6 +98,12 @@ public sealed class AppViewModel : INotifyPropertyChanged
     private bool _isAgentBusy;
     private bool _enableCommandLineExecution;
     private bool _showChatEmptyState = true;
+    private bool _isMcpEnabled;
+    private bool _mcpRequireToken = true;
+    private int _mcpPort = 8765;
+    private string _mcpToken = "";
+    private string _mcpStatusText = "MCP 未启用。";
+    private string _mcpDocsUrl = "";
     private AiHistoryItem? _selectedAgentHistory;
 
     public AppViewModel()
@@ -343,6 +349,42 @@ public sealed class AppViewModel : INotifyPropertyChanged
     {
         get => _enableCommandLineExecution;
         set => SetField(ref _enableCommandLineExecution, value);
+    }
+
+    public bool IsMcpEnabled
+    {
+        get => _isMcpEnabled;
+        set => SetField(ref _isMcpEnabled, value);
+    }
+
+    public bool McpRequireToken
+    {
+        get => _mcpRequireToken;
+        set => SetField(ref _mcpRequireToken, value);
+    }
+
+    public int McpPort
+    {
+        get => _mcpPort;
+        set => SetField(ref _mcpPort, value);
+    }
+
+    public string McpToken
+    {
+        get => _mcpToken;
+        set => SetField(ref _mcpToken, value);
+    }
+
+    public string McpStatusText
+    {
+        get => _mcpStatusText;
+        set => SetField(ref _mcpStatusText, value);
+    }
+
+    public string McpDocsUrl
+    {
+        get => _mcpDocsUrl;
+        set => SetField(ref _mcpDocsUrl, value);
     }
 
     public AiHistoryItem? SelectedAgentHistory

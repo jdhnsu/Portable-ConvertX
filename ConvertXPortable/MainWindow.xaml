@@ -1504,6 +1504,79 @@
                   <StackPanel>
                     <DockPanel Margin="0,0,0,10">
                       <Border DockPanel.Dock="Right" Style="{StaticResource TagStyle}">
+                        <TextBlock Text="MCP" Foreground="{DynamicResource TagForegroundBrush}" FontSize="12" FontWeight="SemiBold" />
+                      </Border>
+                      <TextBlock Text="MCP 服务" FontSize="17" FontWeight="SemiBold" />
+                    </DockPanel>
+
+                    <Grid>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.1*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="0.9*" />
+                      </Grid.ColumnDefinitions>
+
+                      <StackPanel Grid.Row="0" Grid.Column="0">
+                        <TextBlock Text="服务状态" Style="{StaticResource FieldLabelStyle}" />
+                        <CheckBox Content="启用本地 MCP HTTP API"
+                                  IsChecked="{Binding IsMcpEnabled, UpdateSourceTrigger=PropertyChanged}"
+                                  Checked="McpEnabled_Checked"
+                                  Unchecked="McpEnabled_Unchecked" />
+                        <TextBlock Text="{Binding McpStatusText}"
+                                   Foreground="{DynamicResource MutedBrush}"
+                                   FontSize="12"
+                                   Margin="0,8,0,0" />
+                      </StackPanel>
+
+                      <StackPanel Grid.Row="0" Grid.Column="2">
+                        <TextBlock Text="端口" Style="{StaticResource FieldLabelStyle}" />
+                        <TextBox Text="{Binding McpPort, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Text="仅监听 127.0.0.1，本机工具可访问。"
+                                   Foreground="{DynamicResource MutedBrush}"
+                                   FontSize="12"
+                                   Margin="0,6,0,0" />
+                      </StackPanel>
+
+                      <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,12,0,0">
+                        <CheckBox Content="要求 Authorization Bearer Token"
+                                  IsChecked="{Binding McpRequireToken, UpdateSourceTrigger=PropertyChanged}" />
+                        <Grid Margin="0,8,0,0">
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="Auto" />
+                          </Grid.ColumnDefinitions>
+                          <TextBox Text="{Binding McpToken, UpdateSourceTrigger=PropertyChanged}" />
+                          <Button Grid.Column="2"
+                                  Content="重新生成"
+                                  Style="{StaticResource BaseButtonStyle}"
+                                  Click="McpRegenerateToken_Click" />
+                        </Grid>
+                      </StackPanel>
+
+                      <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Content="保存 MCP 设置" Style="{StaticResource PrimaryButtonStyle}" Click="McpSaveSettings_Click" />
+                        <Button Content="打开接口文档" Style="{StaticResource BaseButtonStyle}" Click="McpOpenDocs_Click" />
+                        <TextBlock Text="{Binding McpDocsUrl}"
+                                   Foreground="{DynamicResource MutedBrush}"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="4,0,0,0" />
+                      </StackPanel>
+                    </Grid>
+                  </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource PanelBorderStyle}" Margin="0,0,0,12">
+                  <StackPanel>
+                    <DockPanel Margin="0,0,0,10">
+                      <Border DockPanel.Dock="Right" Style="{StaticResource TagStyle}">
                         <TextBlock Text="AI" Foreground="{DynamicResource TagForegroundBrush}" FontSize="12" FontWeight="SemiBold" />
                       </Border>
                       <TextBlock Text="AI 模型配置" FontSize="17" FontWeight="SemiBold" />
